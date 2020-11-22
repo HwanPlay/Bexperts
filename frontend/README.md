@@ -21,3 +21,6 @@
 7. expo 암호화 저장소
   - expo install expo-secure-store
   - MIT
+8. expo 사운드 모듈
+  - expo install expo-av
+  - MIT

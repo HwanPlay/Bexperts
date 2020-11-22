@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "데일리타운",
+    "slug": "dailytown",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,6 +13,7 @@
     "android": {
       "package": "host.exp.exponent",
       "versionCode": 1
+
     },    
     "updates": {
       "fallbackToCacheTimeout": 0

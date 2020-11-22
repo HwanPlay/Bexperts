@@ -1,11 +1,6 @@
 from rest_framework import serializers
 from .models import ItemCategory, Item
 
-class ItemListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Item
-        fields = '__all__'
-
 class ItemSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         item = Item.objects.create(

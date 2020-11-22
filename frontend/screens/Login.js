@@ -1,25 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Button } from 'react-native';
 
 import * as Google from 'expo-google-app-auth';
 import * as SecureStore from 'expo-secure-store'
 import * as env from '../env';
 
-const image = require('../assets/voidforest.png')
+const image = require('../assets/dailytown.png')
 
 export default function LoginSample({ navigation }) {
   async function check () {
     const jwt = await SecureStore.getItemAsync('token')
-    console.log(jwt)
+    console.log('JWT : ', jwt)
     if (jwt !== null) {
       navigation.navigate('Main')
     } else {
       console.log('로그인하세요')
     }
   }
-  check()
-// const [userInfo, setUserInfo] = 
-  const [checkBtn, setCheckBtn] = useState(0)
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      check()
+    });
+    return unsubscribe;
+}, [navigation])
+
   const onPress = async () => {
     const res = await Google.logInAsync(
       {androidClientId: env.AND_KEY, androidStandaloneAppClientId: env.AND_KEY}).catch(error => {console.log(error)});
@@ -36,7 +42,7 @@ export default function LoginSample({ navigation }) {
       };
       // console.log(data);
 
-      let userInfo = await fetch(`http://${env.IP_ADDRESS}:8000/account/create/`, {
+      let userInfo = await fetch(`http://${env.IP_ADDRESS}/account/create/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;'
@@ -47,7 +53,7 @@ export default function LoginSample({ navigation }) {
       .then(json => {
         console.log(json)  // ok -> 최초 로그인 // duplicate email -> 이후 로그인
         // Login
-        fetch(`http://${env.IP_ADDRESS}:8000/account/login/`, {  
+        fetch(`http://${env.IP_ADDRESS}/account/login/`, {  
         method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -56,7 +62,7 @@ export default function LoginSample({ navigation }) {
         })
         .then(res => res.json())
         .then(json => {
-          console.log('2차 제이슨', json.token)
+          console.log('JWT : ', json.token)
           if (secure_available === true) {
             SecureStore.setItemAsync('token', json.token)
             SecureStore.setItemAsync('access_token', res.accessToken)
@@ -91,10 +97,11 @@ export default function LoginSample({ navigation }) {
       <TouchableOpacity onPress={onPress} style={styles.loginBtn}>
         <Text style={styles.loginText}>Google LOGIN</Text>
       </TouchableOpacity>
-      <Button
+      {/* <TouchableOpacity
+        style={{ position: 'absolute', bottom: 50, backgroundColor: '#66e0ff', zIndex: 100 }}
         title="NextPage(for Dev)"
         onPress={() => navigation.navigate('Main')}
-      />
+      ><Text style={styles.loginText}>Next Page(dev)</Text></TouchableOpacity> */}
       </ImageBackground>
     </View>
   );
@@ -119,17 +126,19 @@ const styles = StyleSheet.create({
     marginBottom:40
   },
   loginText:{
+    fontSize: 15,
     fontWeight:"bold",
     color:"white"
   },
   loginBtn:{
     width:"80%",
-    backgroundColor: "#fbccd1",
+    backgroundColor: "#66e0ff",
     borderRadius:25,
-    height:50,
+    height: 50,
+    width: 250,
     alignItems:"center",
     justifyContent: "center",
-    marginTop: 100,
+    marginTop: 180,
     marginBottom: 10,
   }
 });

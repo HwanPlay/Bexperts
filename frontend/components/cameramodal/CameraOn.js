@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, TouchableOpacity, Alert } from 'react-native';
+import { Text, View } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
+import { IconButton } from 'react-native-paper';
 // import * as MediaLibrary from 'expo-media-library';
 
 
@@ -53,7 +54,7 @@ export default function CameraOn({ setIsCameraOn, setPhotoInfo }) {
     return <Text>No access to camera</Text>;
   }
   return (
-    <View style={{ height: "100%" }}>
+    <View style={{ height: "100%", paddingTop: 10 }}>
       <Camera style={{ flex: 1 }} type={type}
         ref={camera}      
       >
@@ -63,9 +64,21 @@ export default function CameraOn({ setIsCameraOn, setPhotoInfo }) {
             backgroundColor: 'transparent',
             flexDirection: 'row',
           }}>
-          <TouchableOpacity
+          <IconButton
+            icon='arrow-left-bold-box-outline'
+            size={50}
             style={{
-              flex: 0.1,
+              flex: 0.33333,
+              alignSelf: 'flex-end',
+              alignItems: 'center',
+            }}
+            onPress={() => clickCameraOn()}
+          ></IconButton>
+          <IconButton
+            icon='camera-retake-outline'
+            size={50}
+            style={{
+              flex: 0.33333,
               alignSelf: 'flex-end',
               alignItems: 'center',
             }}
@@ -75,36 +88,18 @@ export default function CameraOn({ setIsCameraOn, setPhotoInfo }) {
                   ? Camera.Constants.Type.front
                   : Camera.Constants.Type.back
               );
-            }}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-              {' '}
-              Flip{' '}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+            }}
+          ></IconButton>
+          <IconButton
+            icon='camera-outline'
+            size={50}
             style={{
-              flex: 0.1,
+              flex: 0.33333,
               alignSelf: 'flex-end',
               alignItems: 'center',
             }}
-            onPress={() => clickCameraOn()}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-              {' '}
-              Goback{' '}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-            flex: 0.5,
-            alignSelf: 'flex-end',
-            alignItems: 'center',
-            }}
             onPress={() => snap()}
-        >
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }} >
-              Take a Picture
-            </Text>
-        </TouchableOpacity>
+          ></IconButton>
         </View>
       </Camera>
     </View>

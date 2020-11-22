@@ -3,6 +3,10 @@ from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import update_last_login
 
+from items.serializers import ItemSerializer
+from missions.serializers import MissionSerializer
+from .models import MyItem, MyMission
+
 User = get_user_model()
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
@@ -53,30 +57,27 @@ class UserLoginSerializer(serializers.Serializer):
             'token': jwt_token
         }
 
+class UserSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=True)
 
+    class Meta:
+        model = User
+        field = ('email', 'username')
 
-# class UserSerializerWithToken(serializers.ModelSerializer):
-#     token = serializers.SerializerMethodField()
-#     password = serializers.CharField(write_only=True)
-    
-#     def get_token(self, obj):
-#         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-#         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+class MyItemSerializer(serializers.ModelSerializer):
+    user = UserSerializer(required=False)
+    item = ItemSerializer(read_only=True, required=False)
 
-#         payload = jwt_payload_handler(obj)
-#         token = jwt_encode_handler(payload)
-#         return token
+    class Meta:
+        model = MyItem
+        fields = "__all__"
 
-#     def create(self, validated_data):
-#         password = validated_data.pop('password', None)
-#         print(password)
-#         instance = self.Meta.model(**validated_data)
-#         if password is not None:
-#             instance.set_password(password)
-#         instance.save()
-#         print('good')
-#         return instance
+class MyMissionSerializer(serializers.ModelSerializer):
+    user = UserSerializer(required=False)
+    item = ItemSerializer(read_only=True, required=False)
+    mission = MissionSerializer(read_only=True, required=False)
 
-#     class Meta:
-#         model = User
-#         fields = ('token', 'username', 'first_name', 'last_name', 'email', 'password')
+    class Meta:
+        model = MyMission
+        fields = "__all__"

@@ -11,3 +11,5 @@ class Mission(models.Model):
     mission_category = models.ForeignKey(MissionCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     description = models.TextField()
+    body_title = models.TextField()
+    body_category = models.TextField()

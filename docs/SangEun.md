@@ -1,4 +1,4 @@
-# Final Project
+
 
 ## 2020. 10. 15.
 
@@ -102,4 +102,292 @@ User Table과 Mission Table과 Item Table의 Ternary 관계
 - ***Item ID*** : 해당 미션을 수행하고 클리어했을 시 주어지는 보상 Item의 ID
 - ***Item Category ID*** : 해당 미션을 클리어했을 시 주어지는 보상 Item의 Category의 ID
 - IsCleared : 해당 미션이 클리어되었는지 나타내는 값(T - 클리어 / F - 아직 클리어 못함)
+
+
+
+## 2020. 11. 09.
+
+### Backend API
+
+해설
+
+도메인주소는 h5태그로 표시
+
+메서드는 그 아래쪽에 넣어놨음(get, post, put, delete)
+
+#### 1.아이템 관련 요청
+
+##### 1. /item/
+
+- get : DB내 모든 아이템들의 정보를 불러온다
+
+- post : DB에 새로운 아이템을 생성한다.
+
+- ```json
+  {
+      "itemcategory": itemCategoryID(int, Foreign Key),
+      "name": "name",
+      "sell_price": 100,
+      "buy_price": 300,
+  }
+  ```
+
+##### 2. /item/<int: item_pk>/
+
+- get : 해당 pk를 가진 아이템의 정보 조회
+- put : 해당 pk를 가진 아이템의 정보를 update 한다(1번의 body양식과 같으나 필요한 부분만 넣으면된다 ==> sell_price만 업데이트시 body에 sell_price만 보내면 된다)
+- delete : 해당 pk를 가진 아이템을 DB에서 삭제한다, body 필요없음
+
+##### 3. /item/category/
+
+- get : DB내 모든 아이템 카테고리 정보를 불러온다
+
+- post : DB에 새로운 아이템 카테고리를 생성한다
+
+- ```json
+  {
+      "name": "Flower"
+  }
+  ```
+
+
+
+#### 2.미션 관련 요청
+
+##### 1. /mission/
+
+- get : 모든 DB내 미션들을 조회한다.
+
+- post : DB에 새로운 미션을 생성한다
+
+- ```json
+  {
+      "mission_category": MissionCategoryID(int, Foreign Key),
+      "name": "나무 촬영",
+      "description" : "근처 나무를 촬영하자!"
+  }
+  ```
+
+##### 2. /mission/category/
+
+- get : 모든 DB 내 미션 카테고리를 조회한다.
+
+- post : 새로운 미션 카테고리를 만든다.
+
+- ```json
+  {
+      "name": "Image Detection"
+  }
+  ```
+
+##### 3. /mission/<int: mission_pk>/
+
+- get : 해당 pk의 미션 내용을 조회한다
+- put : 해당 pk의 미션 내용을 update 한다. (1번 양식과 같으나 update 필요한 필드만 보낼것)
+- delete : 해당 pk의 미션을 삭제한다
+
+
+
+#### 3.계정 관련
+
+##### 1. /account/create/
+
+- get : DB 내 모든 유저들을 조회한다.
+
+- post : 계정생성
+
+- ```json
+  {
+      "email": "ssafy@ssafy.com",
+      "username": "ssafy",
+      "password": "1234"
+  }
+  ```
+
+##### 2. /account/login/
+
+- ```json
+  {
+      "email": "ssafy@ssafy.com",
+      "password": "1234"
+  }
+  ```
+
+
+
+#### 4.내 아이템 관련
+
+##### 1.  /account/myitem/
+
+- get : 내가 가진 모든 아이템을 조회한다
+- post : 내 인벤토리에 아이템을 추가한다
+
+- ```json
+  {
+      "item": ItemID(int, Foreign Key),
+      "isinfarm": False,  // True이면 필드 배치, False이면 인벤토리
+      "quantity": 1, // 여러개를 한번에 구매할때 넣어줘야할 변수
+      "location": 8  // 해당 아이템의 위치
+  }
+  ```
+
+##### 2. /account/myitem/<int: myitem_pk>/
+
+- get : 해당 pk의 내 아이템의 정보를 조회한다
+- put : 해당 pk의 내 아이템의 정보를 update한다. body는 1번과 같은 형태로 넣어주되 필요한 필드만 넣어주면 된다
+- delete : 해당 pk를 가진 아이템을 내 인벤토리(필드)에서 삭제한다 ==> 아이템을 전부 다 파는 경우에 사용하면 될듯, body 필요없음
+
+##### 3. /account/myitem/exchange/
+
+- put : 해당 pk를 가진 내 아이템 2개의 위치를 교환한다
+
+- ```json
+  {
+      "item1_id": 17,
+      "item2_id": 18
+  }
+  ```
+
+
+
+#### 5.내 미션 관련
+
+##### 1. /account/mymission/
+
+- get : 내가 받은 모든 미션을 조회한다.
+
+- post : 내 미션을 새로 생성한다(Front에서 안쓰일듯?)
+
+- ```json
+  {
+      "item": ItemID(int, Foreign Key),
+      "mission": MissionID(int, Foreign Key),
+      "user": UserID(int, Foreign Key),
+      "iscleared": False // 클리어 여부
+  }
+  ```
+
+##### 2. /account/mymission/<int: mymission_pk>
+
+- get : 해당 pk에 해당하는 미션을 조회한다
+- put : 미션 클리어!(body 별도 양식 필요, 미션 클리어 부분 조회 바람)
+- delete : 해당 pk를 가진 미션을 제거한다.
+
+
+
+## 2020. 11. 11.
+
+### DJango Cron // periodical Service
+
+#### 1.Install Django-crontab
+
+```bash
+pip install django-crontab
+```
+
+
+
+#### 2.in settings.py
+
+```python
+# settings.py
+
+INSTALLED_APPS = [
+    ...
+    'django_crontab',
+    ...
+]
+
+CRONJOBS = [
+    ('* * * * *', 'APP_NAME.FILE_NAME.FUNCTION_NAME')
+]
+```
+
+
+
+#### 3.in your new File(cron)
+
+```python
+# accounts.cron.py
+
+def periodically_do():
+    ...
+    ...
+    ...
+```
+
+
+
+#### 4.install cron in your linux
+
+```bash
+apt-get insatll cron
+```
+
+
+
+#### 5.Add your cron job
+
+```bash
+python manage.py crontab add  # add your cron job to scheduller, not excute
+python manage.py crontab show # show your cron job,
+python manage.py crontab remove # remove your cron job
+```
+
+
+
+#### 6.start your cron job
+
+```bash
+service cron start  # start your cron job in your scheduller
+service cron stop # stop your cron job
+```
+
+
+
+## 2020. 11. 13
+
+### API update
+
+buy Item, Sell Item, get 3 missions when you sign up, mission clear
+
+#### 1.Shop
+
+##### /account/shop/
+
+- post : 상점에 있는 물품을 구매한다!
+
+```json
+{
+    "qauntity": 3,
+    "location": 4,
+    "item": ItemID(Foreign Key, int),
+    "gold": 50 (구매 후 남은 골드)
+}
+```
+
+- delete : 상점에 물품을 판매한다!
+
+```json
+{
+    "myitem_pk": MyItemPk(Foreign Key, int),
+    "gold": 100 (판매 후 내 골드)
+}
+```
+
+
+
+#### 2.미션 클리어
+
+#####  /account/mymission/<int: mymission_pk>
+
+- put
+
+```json
+{
+    "location": 2
+}
+```
+
+
 

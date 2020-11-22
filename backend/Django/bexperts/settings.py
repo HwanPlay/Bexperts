@@ -17,12 +17,38 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = '&%i6*h!^efcd8yegbrr62hrtzzn)5&@a*rwo^#qb#rs(b*#hiz'
+import os, json
+from django.core.exceptions import ImproperlyConfigured
+
+# SECRET_KEY 파일 위치
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+# secrets.json 파일에서 SECRET_KEY 가져오기    
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+SECRET_KEY = get_secret("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+    'USE_SESSION_AUTH': False
+}
 
 # Application definition
 
@@ -51,17 +77,21 @@ INSTALLED_APPS = [
     #Swagger
    'drf_yasg',
 
+    #crontab
+    'django_crontab',
+
     #MyAPP
     'accounts',
     'items',
     'missions',
+    'ai_images',
 ]
 
 SITE_ID = 1
 
 #CORS Policy
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS=True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -154,6 +184,10 @@ JWT_AUTH = {
     'JWT_AUTH_COOKIE': None,
 }
 
+#CronTab
+CRONJOBS = [
+    ('15 17 * * *', 'accounts.cron.DailyUpdateMission')
+]
 
 ROOT_URLCONF = 'bexperts.urls'
 
@@ -191,14 +225,15 @@ WSGI_APPLICATION = 'bexperts.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# get_secret("SECRET_KEY")
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bexperts_mysql',
-        'USER': 'bexperts',
-        'PASSWORD': 'deploy_ssafy!',
-        'HOST': 'mysql_service',
-        'PORT': '3306',
+        'NAME': get_secret("DB_DATABASE"),
+        'USER': get_secret("DB_USER"),
+        'PASSWORD': get_secret("DB_PASSWORD"),
+        'HOST': get_secret("HOST"),
+        'PORT': get_secret("PORT"),
     }
 }
 

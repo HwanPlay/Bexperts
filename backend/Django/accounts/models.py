@@ -80,25 +80,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.email
-
-# class User(AbstractUser):
-#     objects = UserManager()
-#     email = models.EmailField(max_length=255, null=False, unique=True)
-#     username = models.CharField(max_length=20)
-#     signupdate = models.DateTimeField(auto_now_add=True)
-#     gold = models.IntegerField(default=0),  # 사용자가 가진 돈
-#     farm_theme = models.IntegerField(default=1)  # 사용자가 가진 농장의 테마 // 추후 업데이트 요소임
-
-#     is_active = models.BooleanField(default=True)  # Django 유저모델 필수요소
-#     is_admin = models.BooleanField(default=False)  # Django 유저모델 필수요소
-#     is_superuser = models.BooleanField(default=False)  # Django 유저모델 필수요소
-#     is_staff = models.BooleanField(default=False)  # Django 유저모델 필수요소
-    
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = ['username']
-
-#     myitems = models.ManyToManyField(Item, through='MyItem')
-#     mymissions = models.ManyToManyField(Mission, through='MyMission')
     
 class MyItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
